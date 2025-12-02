@@ -55,6 +55,10 @@ func Second(file *os.File) int {
 		forward := values[1] == "R"
 		number, _ := strconv.Atoi(values[2])
 
+		div := number / 100
+		counter += div
+		number %= 100
+
 		if forward {
 			position += number
 		} else {
@@ -62,20 +66,20 @@ func Second(file *os.File) int {
 		}
 
 		if position < 0 {
-			for position < 0 {
+			if position+number != 0 {
 				counter++
-				position += 100
 			}
+			position += 100
+		}
+
+		if position == 0 {
+			counter++
 		}
 
 		if position >= 100 {
-			for position >= 100 {
-				counter++
-				position -= 100
-			}
+			counter++
+			position -= 100
 		}
-
-		// fmt.Println(position)
 	}
 
 	return counter
