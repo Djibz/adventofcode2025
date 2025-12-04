@@ -4,6 +4,7 @@ import (
 	"aoc/day1"
 	"aoc/day2"
 	"aoc/day3"
+	"aoc/day4"
 	"fmt"
 	"os"
 	"time"
@@ -19,6 +20,8 @@ func openFile(path string) *os.File {
 }
 
 func main() {
+	hello := time.Now()
+
 	file := openFile("../resources/1/input.txt")
 	start := time.Now()
 	fmt.Println("Day 1 step 1:", day1.First(file))
@@ -49,4 +52,16 @@ func main() {
 	fmt.Println("Day 3 step 2:", day3.Second(file))
 	fmt.Println("Time spent :", time.Since(start))
 	file.Close()
+
+	file = openFile("../resources/4/input.txt")
+	start = time.Now()
+	fmt.Println("Day 4 step 1:", day4.First(file))
+	fmt.Println("Time spent :", time.Since(start))
+	file.Seek(0, 0)
+	start = time.Now()
+	fmt.Println("Day 4 step 2:", day4.Second(file))
+	fmt.Println("Time spent :", time.Since(start))
+	file.Close()
+
+	fmt.Println("Total time spent :", time.Since(hello))
 }
