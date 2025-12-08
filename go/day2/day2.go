@@ -57,6 +57,38 @@ func First(file *os.File) int {
 	return counter
 }
 
+func FirstV2(file *os.File) int {
+	counter := 0
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(commaSplit)
+	for scanner.Scan() {
+		values := strings.Split(scanner.Text(), "-")
+		// first, _ := strconv.Atoi(values[0])
+		second, _ := strconv.Atoi(values[1])
+
+		half := values[0][:len(values[0])/2]
+		half_int, _ := strconv.Atoi(half)
+		fmt.Println(values, half)
+
+		for {
+			double, _ := strconv.Atoi(half + half)
+
+			if double > second {
+				break
+			}
+
+			fmt.Println(double)
+			counter += double
+
+			half_int++
+			half = strconv.Itoa(half_int)
+		}
+	}
+
+	return counter
+}
+
 func Second(file *os.File) int {
 	counter := 0
 
