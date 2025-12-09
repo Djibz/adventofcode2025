@@ -81,3 +81,7 @@ func Second(file *os.File) int {
 
 	return 0
 }
+
+func addDomain(domains [][]int, singleton []int) [][]int {
+
+}

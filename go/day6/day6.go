@@ -49,5 +49,58 @@ func First(file *os.File) int {
 }
 
 func Second(file *os.File) int {
-	return 0
+	matrix := tools.GetMatrix(file)
+	op_i := len(matrix) - 1
+
+	total := 0
+
+	current_index := 0
+	for {
+		operator := matrix[op_i][current_index]
+		length := segmentLength(&matrix[op_i], current_index)
+
+		result := 0
+		if operator == '*' {
+			result = 1
+		}
+
+		for offset := range length {
+			str_number := ""
+			for l_i := range len(matrix) - 1 {
+				char := matrix[l_i][current_index+offset]
+				if char != ' ' {
+					str_number += string(char)
+				}
+			}
+			number, _ := strconv.Atoi(str_number)
+			if operator == '+' {
+				result += number
+			} else {
+				result *= number
+			}
+		}
+
+		total += result
+		current_index += length + 1
+		if current_index >= len(matrix[op_i]) {
+			break
+		}
+	}
+
+	return total
+}
+
+func segmentLength(matrix *[]byte, current int) int {
+	length := 1
+	for current+length < len(*matrix) &&
+		(*matrix)[current+length] != '*' &&
+		(*matrix)[current+length] != '+' {
+		length++
+	}
+
+	if current+length == len(*matrix) {
+		return length
+	}
+
+	return length - 1
 }
