@@ -2,7 +2,6 @@ package day5
 
 import (
 	"aoc/tools"
-	"fmt"
 	"os"
 	"slices"
 	"strconv"
@@ -74,11 +73,7 @@ func Second(file *os.File) int {
 		from, _ := strconv.Atoi(values[0])
 		to, _ := strconv.Atoi(values[1])
 
-		// fmt.Println(ranges)
-		// fmt.Println(from, to)
 		ranges = addDomain(ranges, from, to)
-		// fmt.Println(ranges)
-		// fmt.Println()
 	}
 
 	total := 0
@@ -95,7 +90,6 @@ func addDomain(domains []int, from int, to int) []int {
 	i1 := placeToBe(domains, from)
 	i2 := placeToBe(domains, to)
 	l := len(domains)
-	fmt.Println(i1, i2)
 
 	i2_even := i2%2 == 0
 	i2_equal := i2 < l && to == domains[i2]
@@ -135,8 +129,6 @@ func addDomain(domains []int, from int, to int) []int {
 		}
 	}
 
-	fmt.Println(domains)
-	fmt.Println(i1, i2)
 	return slices.Delete(domains, i1+1, i2)
 }
 

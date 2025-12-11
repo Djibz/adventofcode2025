@@ -31,6 +31,16 @@ func GetMatrix(file *os.File) [][]byte {
 	return matrix
 }
 
+func GetMatrixString(file *os.File) []string {
+	var matrix []string
+
+	for l := range LinesChan(file) {
+		matrix = append(matrix, l)
+	}
+
+	return matrix
+}
+
 func PrintStringMatrix(matrix [][]byte) {
 	for x := range len(matrix) {
 		for y := range len(matrix[x]) {
