@@ -127,7 +127,7 @@ func main() {
 	file.Close()
 	fmt.Println()
 
-	file = openFile("../resources/10/input.txt")
+	file = openFile("../resources/10/example.txt")
 	start = time.Now()
 	fmt.Println("Day 10 step 1:", day10.First(file))
 	fmt.Println("Time spent :", time.Since(start))
