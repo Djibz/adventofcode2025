@@ -2,7 +2,6 @@ package day10
 
 import (
 	"aoc/tools"
-	"fmt"
 	"os"
 	"regexp"
 	"slices"
@@ -35,6 +34,22 @@ func indicatorToInt(indicator string) int {
 	}
 
 	return number
+}
+
+func intToIndicator(number int) string {
+	if number == 0 {
+		return ""
+	}
+
+	char := ""
+	if number%2 == 0 {
+		char = "."
+	} else {
+		char = "#"
+		number--
+	}
+
+	return intToIndicator(number/2) + char
 }
 
 func clickButton(state int, button *[]int) int {
@@ -93,7 +108,6 @@ func Second(file *os.File) int {
 		target_joltage := joltageToInt(joltage)
 
 		total += shortestJoltage(target_joltage, &buttons)
-		fmt.Println(total)
 	}
 
 	return total
@@ -165,6 +179,16 @@ func is0(a []int) bool {
 	return true
 }
 
+func isNegative(a []int) bool {
+	for _, n := range a {
+		if n < 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
 func joltageToPattern(joltage []int) int {
 	pattern := 0
 	for i, v := range joltage {
@@ -176,30 +200,49 @@ func joltageToPattern(joltage []int) int {
 	return pattern
 }
 
-type potential struct {
-	state   int
-	buttons []int
+func combinaisons(size int) [][]bool {
+	if size == 1 {
+		return [][]bool{{false}, {true}}
+	}
+
+	combs := [][]bool{}
+	for _, l := range combinaisons(size - 1) {
+		n := []bool{false}
+		n = append(n, l...)
+		combs = append(combs, n)
+
+		n2 := []bool{true}
+		n2 = append(n2, l...)
+		combs = append(combs, n2)
+	}
+	return combs
 }
 
-func eveningSolutions(initial int, goal int, buttons *[][]int) []int {
-	currents := []potential{}
-
-	solutions := []int{}
-
-	for range len(*buttons) {
-		next := []potential{}
-		for _, p := range currents {
-			for ib, b := range *buttons {
-				new_state := clickButton(p.state, &b)
-				new_potential := potential{new_state, append(p.buttons, ib)}
-				if new_state == goal {
-					solutions = append(solutions, new_potential.buttons...)
-				} else {
-					next = append(next, new_potential)
-				}
+func applyCombinaison(combinaison []bool, state int, buttons *[][]int) int {
+	for i, v := range combinaison {
+		if v {
+			for _, id := range (*buttons)[i] {
+				state ^= 1 << id
 			}
 		}
-		currents = next
+	}
+
+	return state
+}
+
+func eveningSolutions(initial int, buttons *[][]int) [][]int {
+	solutions := [][]int{}
+
+	for _, combinaison := range combinaisons(len(*buttons)) {
+		if applyCombinaison(combinaison, initial, buttons) == 0 {
+			solution := []int{}
+			for i, v := range combinaison {
+				if v {
+					solution = append(solution, i)
+				}
+			}
+			solutions = append(solutions, solution)
+		}
 	}
 
 	return solutions
@@ -210,12 +253,26 @@ func shortestJoltage(goal []int, buttons *[][]int) int {
 		return 0
 	}
 
-	shortest, clicked := horizontalShortestWithButtons(0, joltageToPattern(goal), buttons, []int{})
-	fmt.Println(shortest)
-	joltage := goal
-	for _, button_index := range clicked {
-		joltage = applyJoltageNegative(joltage, &(*buttons)[button_index])
+	sizes := []int{}
+
+	for _, clicked := range eveningSolutions(joltageToPattern(goal), buttons) {
+		joltage := goal
+		for _, button_index := range clicked {
+			joltage = applyJoltageNegative(joltage, &(*buttons)[button_index])
+		}
+		if isNegative(joltage) {
+			continue
+		}
+
+		sub := shortestJoltage(divideJoltage(joltage), buttons)
+		if sub != -1 {
+			sizes = append(sizes, len(clicked)+(2*sub))
+		}
 	}
 
-	return shortest + (2 * shortestJoltage(divideJoltage(joltage), buttons))
+	if len(sizes) == 0 {
+		return -1
+	}
+
+	return slices.Min(sizes)
 }
